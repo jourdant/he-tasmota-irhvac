@@ -9,6 +9,7 @@
 metadata {
     definition(name: "Tasmota IRHVAC", namespace: "jourdant", author: "jourdant", importUrl: "https://raw.githubusercontent.com/jourdant/he-tasmota-irhvac/master/drivers/jourdant-he-tasmota-irhvac.groovy") {
         capability "Thermostat"
+        capability "Switch"
     }
 }
 
@@ -54,6 +55,8 @@ preferences {
 }
 
 def updated() {
+    log.debug("updated()")
+
     //normalise temperature based on hubitat preferences
     String hvacCelsius = getTemperatureScale()=="C" ? "On" : "Off"
     String temperature = (hvacCelsius=="On" ? settings.hvacTemp : celsiusToFahrenheit(settings.hvacTemp)).toString()
@@ -79,12 +82,80 @@ def updated() {
     }
 }
 
-def parse(String description) {
+def auto() {
+    log.debug("auto()")
+}
+
+def cool() {
+    log.debug("cool()")
+    BigDecimal temp = 20
+    settings.hvacTemp = getTemperatureScale()=="C" ? temp : celsiusToFahrenheit(temp)
+    settings.hvacMode = "Cool"
+    settings.hvacFanSpeed = "Med"
+    updated()
+}
+
+def emergencyHeat() {
+    log.debug("emergencyHeat()")
     
+    BigDecimal temp = 27
+    settings.hvacTemp = getTemperatureScale()=="C" ? temp : celsiusToFahrenheit(temp)
+    settings.hvacMode = "Heat"
+    settings.hvacFanSpeed = "Med"
+    updated()
+}
+
+def fanAuto() {
+    log.debug("fanAuto()")
+
+}
+
+def fanCirculate() {
+    log.debug("fanCirculate()")
+
+}
+
+def fanOn() {
+    log.debug("fanOn()")
+    on()
+}
+
+def heat() {
+    log.debug("heat()")
+    
+    BigDecimal temp = 27
+    settings.hvacTemp = getTemperatureScale()=="C" ? temp : celsiusToFahrenheit(temp)
+    settings.hvacMode = "Heat"
+    settings.hvacFanSpeed = "Med"
+    updated()
 }
 
 def on() {
+    log.debug("off()")
+    settings.hvacPower = true
+    updated()
 }
 
 def off() {
+    log.debug("off()")
+    settings.hvacPower = false
+    updated()
+}
+
+def setCoolingSetpoint(BigDecimal temperature) {
+    log.debug("setCoolingSetpoint(${temperature})")
+    
+    settings.hvacTemp = temperature
+    updated()
+}
+
+def setHeatingSetpoint(BigDecimal temperature) {
+    log.debug("setHeatingSetpoint(${temperature})")
+    
+    settings.hvacTemp = temperature
+    updated()
+}
+
+def setSchedule() {
+    log.debug("setSchedule()")
 }
